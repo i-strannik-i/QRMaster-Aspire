@@ -2,6 +2,7 @@
 import json
 import re
 import urllib.request
+from urllib.parse import urlsplit
 
 from version import VERSION
 
@@ -19,8 +20,18 @@ def check_update():
     try:
         request = urllib.request.Request(API_URL, headers={
             'Accept': 'application/vnd.github+json', 'User-Agent': f'QRMaster-Aspire/{VERSION}'})
-        with urllib.request.urlopen(request, timeout=3) as response:
-            data = json.loads(response.read(256_000))
+        try:
+            with urllib.request.urlopen(request, timeout=3) as response:
+                data = json.loads(response.read(256_000))
+        except Exception:
+            # GitHub's public API can exhaust its shared IP rate limit.
+            request = urllib.request.Request(RELEASE_URL, headers={'User-Agent': f'QRMaster-Aspire/{VERSION}'})
+            with urllib.request.urlopen(request, timeout=3) as response:
+                location = urlsplit(response.geturl())
+            prefix = f'/{REPOSITORY}/releases/tag/'
+            if location.scheme != 'https' or location.netloc != 'github.com' or not location.path.startswith(prefix):
+                raise ValueError('Unexpected release redirect')
+            data = {'tag_name': location.path[len(prefix):]}
         remote = version_tuple(data.get('tag_name', ''))
         available = bool(remote and remote > version_tuple(VERSION)
                          and not data.get('draft') and not data.get('prerelease'))

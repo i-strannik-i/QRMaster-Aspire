@@ -1,7 +1,7 @@
 -- VECTRIC LUA SCRIPT
--- QRMaster Aspire 1.1.0 / square pocket vectors.
+-- QRMaster Aspire 1.1.1 / square pocket vectors.
 local script_dir = ''
-local TITLE = 'QRМастер Aspire 1.1.0'
+local TITLE = 'QRМастер Aspire 1.1.1'
 local RELEASES = 'https://github.com/i-strannik-i/QRMaster-Aspire/releases/latest'
 
 local function run(values,quiet)

@@ -176,6 +176,14 @@ class QRTests(unittest.TestCase):
 
 
 class UpdateTests(unittest.TestCase):
+    def test_api_rate_limit_uses_public_release_page(self):
+        response = io.BytesIO()
+        response.geturl = lambda: 'https://github.com/i-strannik-i/QRMaster-Aspire/releases/tag/v99.0.0'
+        with patch('urllib.request.urlopen', side_effect=[TimeoutError(), response]):
+            result = check_update()
+        self.assertTrue(result['available'])
+        self.assertEqual(result['latest'], '99.0.0')
+
     def test_version_comparison_and_prereleases(self):
         current=tuple(map(int,VERSION.split('.')))
         new=f'{current[0]}.{current[1]}.{current[2]+1}'

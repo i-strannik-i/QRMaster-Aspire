@@ -1,0 +1,4 @@
+pillow>=11,<13
+numpy>=2,<3
+lupa>=2,<3
+zxing-cpp>=3,<4
